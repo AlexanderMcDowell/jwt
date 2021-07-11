@@ -162,14 +162,14 @@ func New(config ...Config) fiber.Handler {
 
 		if _, ok := cfg.Claims.(jwt.MapClaims); ok {
 			token, err = jwt.Parse(auth, cfg.keyFunc)
+			c.Locals(cfg.ContextKey, token.Claims.(jwt.MapClaims)[cfg.ContextKey])
 		} else {
 			t := reflect.ValueOf(cfg.Claims).Type().Elem()
 			claims := reflect.New(t).Interface().(jwt.Claims)
 			token, err = jwt.ParseWithClaims(auth, claims, cfg.keyFunc)
+			c.Locals(cfg.ContextKey, token.Claims[cfg.ContextKey])
 		}
 		if err == nil && token.Valid {
-			// Store user information from token into context.
-			c.Locals(cfg.ContextKey, token)
 			return cfg.SuccessHandler(c)
 		}
 		return cfg.ErrorHandler(c, err)
