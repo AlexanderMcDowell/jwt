@@ -167,7 +167,7 @@ func New(config ...Config) fiber.Handler {
 			t := reflect.ValueOf(cfg.Claims).Type().Elem()
 			claims := reflect.New(t).Interface().(jwt.Claims)
 			token, err = jwt.ParseWithClaims(auth, claims, cfg.keyFunc)
-			c.Locals(cfg.ContextKey, token.Claims[cfg.ContextKey])
+			c.Locals(cfg.ContextKey, claims[cfg.ContextKey])
 		}
 		if err == nil && token.Valid {
 			return cfg.SuccessHandler(c)
